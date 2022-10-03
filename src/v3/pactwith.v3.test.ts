@@ -1,8 +1,15 @@
 import { V3MockServer } from '@pact-foundation/pact';
+import { eachLike } from '@pact-foundation/pact/src/v3/matchers';
 import * as supertest from 'supertest';
 import { pactWith } from './index';
 
 const getClient = (mock: V3MockServer) => supertest(mock.url);
+
+const EXISTING_EVENT_DATA = {
+  name: 'test event 1',
+  id: '1cb9eb9e',
+  teamId: 'dummy_tid',
+};
 
 pactWith({ consumer: 'MyConsumer', provider: 'pactWith v3' }, (interaction) => {
   interaction('pact integration', ({ provider, execute }) => {
@@ -17,6 +24,9 @@ pactWith({ consumer: 'MyConsumer', provider: 'pactWith v3' }, (interaction) => {
         })
         .willRespondWith({
           status: 200,
+          body: {
+            items: eachLike(EXISTING_EVENT_DATA),
+          },
         })
     );
 
